@@ -6,6 +6,7 @@ from django.contrib.auth.models import (
 
 
 class UserManager(BaseUserManager):
+
     def create_user(self, email, username, password=None):  # , date_of_birth
         """
         Creates and saves a User with the given email, date of
@@ -35,21 +36,20 @@ class UserManager(BaseUserManager):
             password=password,
             # date_of_birth=date_of_birth,
         )
-        user.is_admin = True
+        user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
         return user
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+
     email = models.EmailField(verbose_name='email', max_length=60, unique=True)
 
     date_joined = models.DateTimeField(verbose_name="Date Joined", default=timezone.now)
     last_login = models.DateTimeField(verbose_name="Last Login", default=timezone.now)
-
     username = models.CharField(max_length=100, null=True)
 
-    is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -72,9 +72,3 @@ class User(AbstractBaseUser, PermissionsMixin):
         "Does the user have permissions to view the app `app_label`?"
         # Simplest possible answer: Yes, always
         return True
-
-    @property
-    def is_staff(self):
-        "Is the user a member of staff?"
-        # Simplest possible answer: All admins are staff
-        return self.is_admin
