@@ -1,0 +1,26 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+
+
+{% for profile in profiles %}
+
+        <a href="{% url 'user-profile' profile.id %}">
+
+                <img style="height:150px; width:auto;" src="{{ profile.imageURL }}" alt="image" />
+
+<h3>{{profile.first_name}} {{profile.last_name}}</h3>
+                    <h5>{{profile.short_intro|slice:"60"}}</h5>
+
+        </a>
+
+
+{% endfor %}
+
+
+
+    {% include 'pagination.html' with queryset=profiles custom_range=custom_range %}
+
+
+{% endblock content %}
