@@ -1,27 +1,28 @@
-{% extends 'main.html' %}
+{% extends 'main_login.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% block content %}
 
 
 {% if page == 'register' %}
 
-<div class="auth">
-    <div class="card">
-        <div class="auth__header text-center">
-            <a href="/">
-                <img src="{% static 'images/icon.svg' %}" alt="icon" />
-            </a>
-            <h3>Register an Account</h3>
-            <p>Create a new account</p>
-        </div>
+<div class="register-page" style="min-height: 570.781px;">
+<div class="register-box">
+  <div class="register-logo">
+    <a href="../../index2.html"><b>Blog</b></a>
+  </div>
+
+  <div class="card">
+    <div class="card-body register-card-body">
+      <p class="login-box-msg">Register a new membership</p>
 
         <form method="POST" action="{% url 'register' %}" class="form auth__form">
             {% csrf_token %}
 
             {% for field in form %}
             <div class="form__field">
-                <label for="formInput#text">{{field.label}}</label>
-                {{field}}
+
+                {{ field|as_crispy_field }}
 
                 <!-- {% if field.help_text %}
                 <small>{{field.help_text}}</small>
@@ -35,61 +36,131 @@
 
             {% endfor %}
 
-            <div class="auth__actions">
-                <input class="btn btn--sub btn--lg" type="submit" value="Sign  In" />
+
+            <div class="row">
+          <div class="col-8">
+            <div class="icheck-primary">
+              <input type="checkbox" id="agreeTerms" name="terms" value="agree">
+              <label for="agreeTerms">
+               I agree to the <a href="#">terms</a>
+              </label>
             </div>
-        </form>
-        <div class="auth__alternative">
-            <p>Already have an Account?</p>
-            <a href="{% url 'login' %}">Log In</a>
+          </div>
+          <!-- /.col -->
+          <div class="col-4">
+            <button type="submit" class="btn btn-primary btn-block">Register</button>
+          </div>
+          <!-- /.col -->
         </div>
+
+        </form>
+
+
+
+      <div class="social-auth-links text-center">
+        <p>- OR -</p>
+        <a href="#" class="btn btn-block btn-primary">
+          <i class="fab fa-facebook mr-2"></i>
+          Sign up using Facebook
+        </a>
+        <a href="#" class="btn btn-block btn-danger">
+          <i class="fab fa-google-plus mr-2"></i>
+          Sign up using Google+
+        </a>
+      </div>
+
+      <a href="{% url 'login' %}" class="text-center">I already have a membership</a>
     </div>
+    <!-- /.form-box -->
+  </div><!-- /.card -->
 </div>
+<!-- /.register-box -->
+
+
+</div>
+
+
 
 
 
 {% else %}
 
-<div class="auth">
 
-    <div class="card">
-
-        <div class="auth__header text-center">
-            <a href="/">
-                <img src="{% static 'images/icon.svg' %}" alt="icon" />
-            </a>
-            <h3>Account Login</h3>
-            <p>Welcome Back!</p>
+<div class="hold-transition login-page">
+    <div class="login-box">
+        <div class="login-logo">
+            <a href="#"><b>Blog</b></a>
         </div>
+        <!-- /.login-logo -->
+        <div class="card">
+            <div class="card-body login-card-body">
+                <p class="login-box-msg">Welcome Back!</p>
 
-        <form action="" method="POST" class="form auth__form">
-            {% csrf_token %}
-            <!-- Input:Username -->
-            <div class="form__field">
-                <label for="formInput#text">Email: </label>
-                <input class="input input--text" id="formInput#text" type="text" name="username"
-                    placeholder="Enter your username..." />
+
+                <form action="" method="POST" class="form auth__form">
+                    {% csrf_token %}
+                    <!-- Input:Email -->
+                    <div class="input-group mb-3">
+                        <input class="form-control" id="formInput#text" type="email" name="username"
+                               placeholder="Email"/>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Input:Password -->
+                    <div class="input-group mb-3">
+                        <input type="password" class="form-control" name="password" placeholder="Password">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="icheck-primary">
+                                <input type="checkbox" id="remember">
+                                <label for="remember">
+                                    Remember Me
+                                </label>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-primary btn-block">Log In</button>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                </form>
+
+
+                <div class="social-auth-links text-center mb-3">
+                    <p>- OR -</p>
+                    <a href="#" class="btn btn-block btn-primary">
+                        <i class="fab fa-facebook mr-2"></i> Sign in using Facebook
+                    </a>
+                    <a href="#" class="btn btn-block btn-danger">
+                        <i class="fab fa-google-plus mr-2"></i> Sign in using Google+
+                    </a>
+                </div>
+                <!-- /.social-auth-links -->
+
+                <p class="mb-1">
+                    <a href="{% url 'reset_password' %}">I forgot my password</a>
+                </p>
+                <p class="mb-0">
+                    <a href="{% url 'register' %}" class="text-center">Register a new membership</a>
+                </p>
             </div>
-
-            <!-- Input:Password -->
-            <div class="form__field">
-                <label for="formInput#password">Password: </label>
-                <input class="input input--password" id="formInput#passowrd" type="password" name="password"
-                    placeholder="••••••••" />
-            </div>
-
-            <div class="auth__actions">
-                <input class="btn btn--sub btn--lg" type="submit" value="Log In" />
-                <a href="{% url 'reset_password' %}">Forget Password?</a>
-            </div>
-        </form>
-
-        <div class="auth__alternative">
-            <p>Don’t have an Account?</p>
-            <a href="{% url 'register' %}">Sign Up</a>
+            <!-- /.login-card-body -->
         </div>
     </div>
-</div>
+    <!-- /.login-box -->
 
 
 {% endif %}

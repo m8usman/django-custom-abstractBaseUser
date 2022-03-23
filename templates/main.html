@@ -9,41 +9,39 @@
     <!-- App favicon -->
     <link rel="shortcut icon" href="assets/images/favicon.ico"/>
 
-    <!-- third party css -->
-    <link
-            href="{% static 'css/vendor/jquery-jvectormap-1.2.2.css' %}" rel="stylesheet" type="text/css"
-    />
-    <!-- third party css end -->
 
-    <!-- App css -->
-    <link href="{% static 'css/icons.min.css' %}" rel="stylesheet" type="text/css"/>
-    <link href="{% static 'css/app-modern.min.css' %}" rel="stylesheet" type="text/css" id="light-style"
-    />
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static 'css/adminlte.min.css' %}">
+
+
 </head>
 <body>
 {% include 'navbar.html' %}
 
-<div class="container-fluid mt-3">
+<div class="content-wrapper">
+    <section class="content">
+        <div class="container-fluid">
+            {% block content %}
 
-    {% block content %}
-
-    {% endblock content %}
-
+            {% endblock content %}
+        </div>
+    </section>
 </div>
 
-<!-- bundle -->
-<script src="{% static 'js/vendor.min.js' %}"></script>
-<script src="{% static 'js/app.min.js' %}"></script>
 
-<!-- third party js -->
-<script src="{% static 'js/vendor/apexcharts.min.js' %}"></script>
-<script src="{% static 'js/vendor/jquery-jvectormap-1.2.2.min.js' %}"></script>
-<script src="{% static 'js/vendor/jquery-jvectormap-world-mill-en.js' %}"></script>
-<!-- third party js ends -->
+<!-- jQuery -->
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'dist/js/adminlte.min.js' %}"></script>
 
-<!-- demo app -->
-<script src="{% static 'js/pages/demo.dashboard.js' %}"></script>
-<!-- end demo js-->
 
 </body>
 </html>
