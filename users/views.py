@@ -2,93 +2,75 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.views.generic.base import View
+from django.views.generic import TemplateView, CreateView, ListView, DetailView
+
 from .models import User, Profile
-from .forms import CustomUserCreationForm, ProfileForm
+from .forms import CustomUserCreationForm, ProfileForm, LoginForm
 from .utils import searchProfiles, paginateProfiles
-from django.urls import conf
-from django.db.models import Q
-from django.dispatch.dispatcher import receiver
 
 
-def loginUser(request):
-    page = 'login'
+class LoginUser(TemplateView):
+    template_name = 'users/login.html'
 
-    if request.user.is_authenticated:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = LoginForm()
+        return context
 
-        return redirect('profiles')
-
-    if request.method == 'POST':
-        username = request.POST['username'].lower()
+    def post(self, request):
+        email = request.POST['email']
         password = request.POST['password']
 
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get()
         except:
-            messages.error(request, 'Username does not exist')
+            messages.error(request, 'email does not exist')
 
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, email=email, password=password)
 
         if user is not None:
             login(request, user)
             return redirect(request.GET['next'] if 'next' in request.GET else 'account')
 
         else:
-            messages.error(request, 'Username OR password is incorrect')
-
-    return render(request, 'users/login_register.html')
-
-
-def logoutUser(request):
-    logout(request)
-    messages.info(request, 'User was logged out!')
-    return redirect('login')
+            return redirect(request.GET['next'] if 'next' in request.GET else 'login')
+            messages.error(request, 'email OR password is incorrect')
 
 
-def registerUser(request):
-    page = 'register'
-    form = CustomUserCreationForm()
-
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.username = user.username.lower()
-            user.save()
-
-            messages.success(request, 'User account was created!')
-
-            login(request, user)
-            return redirect('edit-account')
-
-        else:
-            messages.success(
-                request, 'An error has occurred during registration')
-
-    context = {'page': page, 'form': form}
-    return render(request, 'users/login_register.html', context)
+class LogoutUser(View):
+    def get(self, request):
+        logout(request)
+        messages.info(request, 'User was logged out!')
+        return redirect('login')
 
 
-def profiles(request):
-    profiles, search_query = searchProfiles(request)
-
-    custom_range, profiles = paginateProfiles(request, profiles, 3)
-    context = {'profiles': profiles, 'search_query': search_query,
-               'custom_range': custom_range}
-    return render(request, 'users/profiles.html', context)
+class RegisterUser(CreateView):
+    model = User
+    form_class = CustomUserCreationForm
+    template_name = 'users/register.html'
+    success_url = '/account'
 
 
-def userProfile(request, pk):
-    profile = Profile.objects.get(id=pk)
+class Profiles(ListView):
+    template_name = 'users/profiles.html'
+    model = Profile
+    context_object_name = 'profiles'
 
-    context = {'profile': profile}
-    return render(request, 'users/user-profile.html', context)
+
+class UserProfile(DetailView):
+    template_name = 'users/user-profile.html'
+    model = Profile
 
 
-@login_required(login_url='login')
-def userAccount(request):
-    profile = request.user.profile
-    context = {'profile': profile}
-    return render(request, 'users/account.html', context)
+@method_decorator(login_required, name='dispatch')
+class UserAccount(TemplateView):
+    def get(self, request):
+        profile = request.user.profile
+        context = {'profile': profile}
+        return render(request, 'users/account.html', context)
+
 
 
 @login_required(login_url='login')

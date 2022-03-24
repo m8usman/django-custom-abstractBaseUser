@@ -1,4 +1,5 @@
 from django.forms import ModelForm
+from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User
 from .models import Profile
@@ -9,17 +10,22 @@ class CustomUserCreationForm(UserCreationForm):
         model = User
         fields = ['username', 'email', 'password1']
 
-    def __init__(self, *args, **kwargs):
-        super(CustomUserCreationForm, self).__init__(*args, **kwargs)
-
 
 class ProfileForm(ModelForm):
     class Meta:
         model = Profile
         fields = '__all__'
 
-    def __init__(self, *args, **kwargs):
-        super(ProfileForm, self).__init__(*args, **kwargs)
+
+class LoginForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ['email', 'password']
+        widgets = {
+            'password': forms.PasswordInput(),
+        }
+
+
 
 
 

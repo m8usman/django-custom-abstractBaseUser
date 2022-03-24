@@ -5,7 +5,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
 def paginateProfiles(request, profiles, results):
-    page = request.GET.get('page')
+    page = request.GET.get()
     paginator = Paginator(profiles, results)
 
     try:
@@ -35,8 +35,8 @@ def paginateProfiles(request, profiles, results):
 def searchProfiles(request):
     search_query = ''
 
-    if request.GET.get('search_query'):
-        search_query = request.GET.get('search_query')
+    if request.GET.get():
+        search_query = request.GET.get()
 
     profiles = Profile.objects.distinct().filter(
         Q(first_name__icontains=search_query) |
