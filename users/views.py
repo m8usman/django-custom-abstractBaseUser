@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic.base import View
-from django.views.generic import TemplateView, CreateView, ListView, DetailView
+from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView
 
 from .models import User, Profile
 from .forms import CustomUserCreationForm, ProfileForm, LoginForm
@@ -23,20 +24,20 @@ class LoginUser(TemplateView):
         email = request.POST['email']
         password = request.POST['password']
 
-        try:
-            user = User.objects.get()
-        except:
-            messages.error(request, 'email does not exist')
-
         user = authenticate(request, email=email, password=password)
+
+        try:
+            user = User.objects.get(email=email)
+        except:
+            messages.error(request, 'Email does not exist.')
 
         if user is not None:
             login(request, user)
             return redirect(request.GET['next'] if 'next' in request.GET else 'account')
 
         else:
+            messages.error(request, 'email OR password is incorrect.')
             return redirect(request.GET['next'] if 'next' in request.GET else 'login')
-            messages.error(request, 'email OR password is incorrect')
 
 
 class LogoutUser(View):
@@ -72,19 +73,9 @@ class UserAccount(TemplateView):
         return render(request, 'users/account.html', context)
 
 
-
-@login_required(login_url='login')
-def editAccount(request):
-    profile = request.user.profile
-    form = ProfileForm(instance=profile)
-
-    if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES, instance=profile)
-        if form.is_valid():
-            form.save()
-
-            return redirect('account')
-
-    context = {'form': form}
-    return render(request, 'users/profile_form.html', context)
-
+@method_decorator(login_required, name='dispatch')
+class EditAccount(UpdateView):
+    template_name = 'users/profile_form.html'
+    model = Profile
+    form_class = ProfileForm
+    success_url = reverse_lazy('profiles')

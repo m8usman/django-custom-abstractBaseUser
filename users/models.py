@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser, PermissionsMixin
@@ -55,6 +56,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    # is_email_verified = models.BooleanField(default=False)
 
     objects = UserManager()
 
@@ -94,6 +96,9 @@ class Profile(models.Model):
 
     def __str__(self):
         return str(self.username)
+
+    def get_absolute_url(self):
+        return reverse('account', kwargs={'pk': self.id})
 
     class Meta:
         ordering = ['created']
