@@ -1,8 +1,8 @@
-from django.forms import ModelForm
-from django import forms
+from django.forms import ModelForm, Form
 from django.contrib.auth.forms import UserCreationForm
 from .models import User
 from .models import Profile
+from django import forms
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -17,21 +17,16 @@ class ProfileForm(ModelForm):
         fields = '__all__'
 
 
-class LoginForm(ModelForm):
-    class Meta:
-        model = User
-        fields = ['email', 'password']
-        widgets = {
-            'password': forms.PasswordInput(),
-        }
+class LoginForm(forms.Form):
+
+    email = forms.EmailField(label="Email", max_length=254)
+    password = forms.CharField(label="Password", widget=forms.PasswordInput)
 
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
 
         for name, field in self.fields.items():
-            field.widget.attrs.update(
-                {'type': 'email', 'name': 'email', 'class': 'form-control', 'id': 'exampleInputEmail1',
-                 'placeholder': 'Enter email'})
+            field.widget.attrs.update({'class': 'form-control'})
 
 
 class ProfileForm(ModelForm):

@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -5,39 +6,26 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic.base import View
-from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView
-
+from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, FormView
 from .models import User, Profile
 from .forms import CustomUserCreationForm, ProfileForm, LoginForm
-from .utils import searchProfiles, paginateProfiles
 
 
-class LoginUser(TemplateView):
+class LoginUser(FormView):
+    form_class = LoginForm
     template_name = 'users/login.html'
+    success_url = '/account'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = LoginForm()
-        return context
+    def form_valid(self, form):
 
-    def post(self, request):
-        email = request.POST['email']
-        password = request.POST['password']
-
-        user = authenticate(request, email=email, password=password)
-
-        try:
-            user = User.objects.get(email=email)
-        except:
-            messages.error(request, 'Email does not exist.')
+        user = authenticate(email=self.request.POST['email'], password=self.request.POST['password'])
 
         if user is not None:
-            login(request, user)
-            return redirect(request.GET['next'] if 'next' in request.GET else 'account')
-
+            login(self.request, user)
+            return super(LoginUser, self).form_valid(form)
         else:
-            messages.error(request, 'email OR password is incorrect.')
-            return redirect(request.GET['next'] if 'next' in request.GET else 'login')
+            messages.error(self.request, 'Email OR password is incorrect')
+            return super(LoginUser, self).form_valid(form)
 
 
 class LogoutUser(View):
